@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>classroom</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.115.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.115.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.7.1/gsap.min.js"></script>
+
+</head>
+<body>
+
+  <script>
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+   
+    const renderer = new THREE.WebGLRenderer({ alpha: true }); // Enable alpha for transparency
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true; // Enable shadow mapping
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Choose the type of shadow map (you can experiment with different types)
+
+    document.body.appendChild(renderer.domElement);
+    
+    
+    const axesHelper = new THREE.AxesHelper(5); // The parameter specifies the size of the axes helper
+    scene.add(axesHelper);
+    
+    // Add lights to the scene
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+    scene.add(ambientLight);
+    
+      const directionalLight = new THREE.DirectionalLight(0xffffff, .3);
+  directionalLight.position.set(-2, 2,- 6);
+    //directionalLight.target.position.set(5, 0, 5);
+    directionalLight.castShadow = true;
+    scene.add(directionalLight);
+    
+    
+// creation des blocs table/chaise à multiplier dans la salle
+    // Create a table
+    // preparataion de la texture inox pour les pieds
+    
+    var textureLoader = new THREE.TextureLoader();
+    var inoxTexture = textureLoader.load('https://cdn.glitch.global/48b8a110-6b48-49f9-b4a6-f75c5907dfc8/inox.jpeg?v=1689839970104');
+    
+    const tableGroup = new THREE.Group();
+    const tableGeometry = new THREE.BoxGeometry(2.1, .1, 1.1);
+     tableGeometry.castShadow = true;
+     tableGeometry.receiveShadow = true;
+    const tableMaterial = new THREE.MeshBasicMaterial({ color:"#f0f7f2" }); // 
+    const table = new THREE.Mesh(tableGeometry, tableMaterial);
+    
+    table.position.set(0,.4,+.4);
+    
+    const tableLegGeometry = new THREE.CylinderGeometry(0.04, 0.03, .8, 15);
+    tableLegGeometry.castShadow = true;
+     tableLegGeometry.receiveShadow = true;
+    const tableLegMaterial = new THREE.MeshBasicMaterial({ color: "white",map:inoxTexture,metalness:0.6,roughness:0.4 }); // Brown color
+    
+    const tableLeg1 = new THREE.Mesh(tableLegGeometry, tableLegMaterial);
+    const tableLeg2 = new THREE.Mesh(tableLegGeometry, tableLegMaterial);
+    const tableLeg3 = new THREE.Mesh(tableLegGeometry, tableLegMaterial);
+    const tableLeg4 = new THREE.Mesh(tableLegGeometry, tableLegMaterial);
+    tableLeg1.position.set(-1,0,.9);
+    tableLeg2.position.set(-1,0,-.1);
+    tableLeg3.position.set(1,0,-.1);
+    tableLeg4.position.set(1,0,.9);
+    tableGroup.add(table,tableLeg1,tableLeg2,tableLeg3,tableLeg4)
+   // scene.add(tableGroup);
+
+    // Create a chair
+       const chairGroup = new THREE.Group();
+    
+    const chairLegGeometry = new THREE.CylinderGeometry(0.025, 0.025, 0.6, 16);
+   // const chairLegMaterial = new THREE.MeshBasicMaterial({ color: "orange",transparent:true,opacity:.7 }); // Brown color
+
+    const chairBackGeometry = new THREE.BoxGeometry(0.4, 0.5, 0.05);
+   const chairBackMaterial = new THREE.MeshBasicMaterial({ color: "lightblue",transparent:true,opacity:.7 }); // Brown color
+
+    const chairSeatGeometry = new THREE.BoxGeometry(0.4, 0.05, 0.5);
+    const chairSeatMaterial = new THREE.MeshBasicMaterial({ color: "blue",transparent:true,opacity:.7 }); // Brown color
+
+    const chairLeg1 = new THREE.Mesh(chairLegGeometry, tableLegMaterial);
+    const chairLeg2 = new THREE.Mesh(chairLegGeometry, tableLegMaterial);
+    const chairLeg3 = new THREE.Mesh(chairLegGeometry, tableLegMaterial);
+    const chairLeg4 = new THREE.Mesh(chairLegGeometry, tableLegMaterial);
+    const chairBack = new THREE.Mesh(chairBackGeometry, chairBackMaterial);
+    const chairSeat = new THREE.Mesh(chairSeatGeometry, chairSeatMaterial);
+
+    chairLeg1.position.set(-0.15, -.1, -0.15);
+    chairLeg2.position.set(0.15, -.1, -0.15);
+    chairLeg3.position.set(-0.15, -.1, 0.15);
+    chairLeg4.position.set(0.15, -.1, 0.15);
+    chairBack.position.set(0, 0.4, -0.25);
+    chairSeat.position.set(0, .2, 0);
+    chairGroup.add(chairLeg1, chairLeg2, chairLeg3, chairLeg4, chairBack, chairSeat)
+    // scene.add(chairGroup);
+    
+    chairGroup.position.set(-.5,0,0);
+    
+     // Duplicate the chair
+    const chair2Group = chairGroup.clone();
+    chair2Group.position.set(.5, 0, 0); // Adjust position of the duplicated chair
+  // scene.add(chair2Group);
+    
+    const blocGroup = new THREE.Group();
+    blocGroup.add(chairGroup,chair2Group,tableGroup);
+    blocGroup.position.set(-2,0,-1);
+   
+    scene.add(blocGroup);
+       
+    const bloc2Group = blocGroup.clone();
+    bloc2Group.position.set(2,0,-1);
+    scene.add(bloc2Group);
+    const bloc3Group = blocGroup.clone();
+    bloc3Group.position.set(2,0,-5);
+    scene.add(bloc3Group);
+    const bloc4Group = blocGroup.clone();
+    bloc4Group.position.set(-2,0,-5);
+    scene.add(bloc4Group);
+     const bloc5Group = blocGroup.clone();
+    bloc5Group.position.set(2,0,-3);
+    scene.add(bloc5Group);
+     const bloc6Group = blocGroup.clone();
+    bloc6Group.position.set(-2,0,-3);
+    scene.add(bloc6Group);
+    
+    const bloc7Group=blocGroup.clone();
+    bloc7Group.position.set(-2,0,3);
+    bloc7Group.rotation.y = Math.PI
+    scene.add(bloc7Group);
+    
+    // creation du sol et des murs 
+    
+   // Create the floor
+var  carrelage = "https://cdn.glitch.global/b0362595-bc7c-4c70-bff6-ce38c7953968/carrelage.jpg?v=1693897055119" 
+var textureCarr = new THREE.TextureLoader().load(carrelage);
+    textureCarr.wrapS = THREE.RepeatWrapping; // Set wrapping mode for X-axis
+textureCarr.wrapT = THREE.RepeatWrapping; // Set wrapping mode for Y-axis
+textureCarr.repeat.set(50, 50); // Adjust the repeat factor to control texture scale
+
+    
+    
+var floorGeometry = new THREE.PlaneGeometry(10, 11);
+var floorMaterial = new THREE.MeshStandardMaterial({ color: "white",map:textureCarr,side:THREE.DoubleSide});
+var floor = new THREE.Mesh(floorGeometry, floorMaterial);
+       // floor.position.z=6
+floor.rotation.x = -Math.PI / 2;
+    floor.position.set(0,-0.4,-0.5);
+scene.add(floor);
+
+// Create the walls
+var wallGeometry = new THREE.PlaneGeometry(11, 3);
+var wallMaterial = new THREE.MeshStandardMaterial({ color:0xd3d3d3});
+
+var backWall = new THREE.Mesh(wallGeometry, wallMaterial);
+   
+    backWall.castShadow = true;
+    backWall.receiveShadow = true;
+
+       backWall.rotation.y = -Math.PI/2;
+        backWall.position.x = 5;
+        backWall.position.z = -.5;
+        backWall.position .y = 1.1 ;
+scene.add(backWall);
+    
+  //  const frontWallGeo =  new THREE.BoxGeometry(10, 3,.1);
+    const frontWallGeo = new THREE.PlaneGeometry(10,3)
+    const frontWall = new THREE.Mesh(frontWallGeo, wallMaterial);
+   
+    frontWall.position.set(0,1.1,5);
+    frontWall.rotation.y = Math.PI/1;
+  
+    scene.add(frontWall);
+    
+    // add tableau blanc et porte
+    
+      var bois = "https://cdn.glitch.global/b0362595-bc7c-4c70-bff6-ce38c7953968/bois%20clair?v=1694087648557"
+    var textBois = new THREE.TextureLoader().load(bois);
+    
+    //tableau
+    const groupTableau = new THREE.Group();
+  
+var tableauGeometry = new THREE.PlaneGeometry(3, 1.5);
+var tableauMaterial = new THREE.MeshStandardMaterial({color:"white",emissive: new THREE.Color("white"),side:THREE.BackSide});
+var tableau = new THREE.Mesh(tableauGeometry, tableauMaterial);
+    
+    var maskGeo = new THREE.BoxGeometry(3.2, 1.7,.1);
+  var maskMat = new THREE.MeshStandardMaterial({ color: "gray",map:textBois,side:THREE.DoubleSide});
+  //  var mask = new THREE.Mesh(maskGeo, maskMat);
+    
+    var tabletteGeo = new THREE.BoxGeometry(3,.03,0.3);
+    var tabletteMat = new THREE.MeshStandardMaterial({ map:textBois,side:THREE.DoubleSide});
+    const tablette = new THREE.Mesh(tabletteGeo, tabletteMat);
+
+    tableau.position.set(0,1,4.83);
+    //mask.position.set(0,1,4.9);
+    tablette.position.set(0,.3,4.6)
+   
+    // groupTableau.add(mask);
+     groupTableau.add (tableau);
+    groupTableau.add(tablette);
+    scene.add(groupTableau);
+    
+    // deco
+    
+    const decoGroup = new THREE.Group();
+    
+    var mappemonde =   "https://cdn.glitch.global/b0362595-bc7c-4c70-bff6-ce38c7953968/mappemonde.jpeg?v=1694176726492"
+    var decoText = new THREE.TextureLoader().load(mappemonde);
+    var decoGeometry = new THREE.PlaneGeometry(2, 1.8);
+var decoMaterial = new THREE.MeshStandardMaterial({color:"white",map:decoText,side:THREE.BackSide});
+var deco = new THREE.Mesh(decoGeometry,decoMaterial);
+    deco.position.set(4.85,1.2,-2);
+    deco.rotation.y = Math.PI/2;
+    
+    var cadreMapGeo = new THREE.BoxGeometry(2.1, 1.9,.05);
+    const cadreMap = new THREE.Mesh(cadreMapGeo,maskMat);
+    
+    cadreMap.position.set(4.9,1.2,-2)
+    cadreMap.rotation.y = Math.PI/2;
+    
+    decoGroup.add(deco);
+    decoGroup.add(cadreMap);
+    scene.add(decoGroup);
+    
+    //porte
+   const doorGroup =new THREE.Group();
+  
+    
+    var doorGeometry = new THREE.BoxGeometry(2, 1.3,.1);
+    var doorMaterial = new THREE.MeshStandardMaterial({ color: "white",map:textBois,side:THREE.DoubleSide});
+    var door = new THREE.Mesh(doorGeometry, doorMaterial);
+    
+   
+    door.rotation.z = Math.PI/2;
+    door.rotation.y = Math.PI/2;
+    door.position.set(4.95,.6,3)
+    doorGroup.add(door);
+    
+    const poigneeGeometry = new THREE.CylinderGeometry(0.04, 0.05, 0.2, 16);
+    const poigneeMaterial = new THREE.MeshBasicMaterial({ color: "white",map:inoxTexture,metallness:.5,roughness:.5 });
+    
+    const poignee = new THREE.Mesh(poigneeGeometry,poigneeMaterial);
+    poignee.rotation.x = Math.PI/2;
+    poignee.position.set(4.8,.8,2.5);
+    doorGroup.add(poignee);
+    scene.add(doorGroup);
+    
+    // points de contact
+    
+    const interrupteur = new THREE.Group();
+    const socleGeometry = new THREE.BoxGeometry(.05,.2,.2);
+    const socleMaterial = new THREE.MeshBasicMaterial({ color: "lightgray",transparent:true,opacity:.8 });
+    
+    const socle = new THREE.Mesh(socleGeometry,socleMaterial);
+    socle.position.set(4.95,1,2);
+    interrupteur.add(socle);
+    
+    const touchGeo = new THREE.BoxGeometry(.04,.08,.04);
+    const touchMat = new THREE.MeshBasicMaterial({ color: "gray",transparent:true,opacity:1 });
+    
+    const touch = new THREE.Mesh(touchGeo,touchMat);
+    touch.position.set(4.90,1,2);
+    
+    interrupteur.add(touch);
+    scene.add(interrupteur);
+      // add corbeille
+
+      const corbeilleGeo = new THREE.CylinderGeometry(0.25, 0.2, 0.5);
+      const corbeilMaterial = new THREE.MeshBasicMaterial({
+        color: "gray", // Color of the cylinder
+        map: inoxTexture,
+        transparent: true, // Enable transparency
+        opacity: 0.7, // Adjust the opacity (0 to 1)
+      });
+      const corbeille = new THREE.Mesh(corbeilleGeo, corbeilMaterial);
+
+      corbeille.position.set(3, -0.15, 4);
+
+      scene.add(corbeille);
+    
+      const cadreGroup = new THREE.Group();
+
+      function createFrame([x, y, z], [p1, p2, p3]) {
+        var frameGeo = new THREE.BoxGeometry(x, y, z);
+        var frameMat = new THREE.MeshBasicMaterial({
+          color: "gray",
+          metallness: 0.6,
+          roughness: 0.3,
+          transparent: true,
+          opacity: 1,
+        });
+        const frame = new THREE.Mesh(frameGeo, frameMat);
+
+        frame.position.set(p1, p2, p3);
+        cadreGroup.add(frame);
+      }
+
+      createFrame([0.15, 2, 0.1], [1.8, 1.5, 4]);
+      createFrame([0.15, 2, 0.1], [3.7, 1.5, 4]);
+      createFrame([0.15, 2, 0.1], [2.5, 1.5, 4]);
+      createFrame([2, 0.15, 0.1], [2.75, 2.5, 4]);
+      createFrame([2, 0.15, 0.1], [2.75, 0.5, 4]);
+
+      //Create the window pane geometries
+      var vitre1Geo = new THREE.PlaneGeometry(2, 2);
+      //var vitre2Geo = new THREE.PlaneGeometry(2,2);
+
+      var vitre1 = new THREE.Mesh(
+        vitre1Geo,
+        new THREE.MeshBasicMaterial({
+          color: "white",
+          transparent: true,
+          opacity: 0.5,
+          side: THREE.DoubleSide,
+        })
+      );
+      //var vitre2 = new THREE.Mesh(vitre2Geo, new THREE.MeshBasicMaterial({ color: 'green', transparent: true, opacity: .4,side:THREE.DoubleSide}));
+
+      // // Position the window panes within the frame
+      vitre1.position.set(2.75, 1.6, 4);
+      //vitre2.position.set(.2,-1.6,-6);
+
+      cadreGroup.add(vitre1);
+
+      const poignee4Geo = new THREE.CylinderGeometry(0.06, 0.04, 0.5, 16);
+      const poignee4Mat = new THREE.MeshBasicMaterial({
+        color: "gray",
+        metallness: 0.5,
+        roughness: 0.5,
+      });
+
+      const poignee4 = new THREE.Mesh(poignee4Geo, poignee4Mat);
+      poignee4.position.set(2.75, 1.6, 4.15);
+      poignee4.rotation.z = Math.PI / 2.5;
+
+      cadreGroup.add(poignee4);
+
+      scene.add(cadreGroup);
+      cadreGroup.rotation.y = Math.PI / 2;
+      cadreGroup.position.x = -9;
+      cadreGroup.position.z = 5;
+    
+  
+    camera.position.z = -5;
+    camera.position.x =-1;
+    camera.position.y = 2
+    // Add OrbitControls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = true;
+    controls.update();
+
+    function animate() {
+  requestAnimationFrame(animate);
+  //controls.update();
+  renderer.render(scene, camera);
+}
+
+    animate();
+    
+    
+
+  </script>
+ <script src = "raycast.js"></script>
+  <script src = "image1.js"></script>
+    <script src = "images2.js"></script>
+</body>
+</html>
+
+
