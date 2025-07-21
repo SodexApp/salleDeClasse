@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Salle de classe</title>
+    <script
+      type="module"
+      src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"
+    ></script>
+ <style>
+     
+      model-viewer {
+        height: 500px;
+        width: 800px;
+        margin : 0 auto
+      }
+
+    
+    </style>
+  </head>
+  <body>
+   
+     <model-viewer bounds="tight" enable-pan  src="https://cdn.glitch.global/c253e857-2755-48c5-93c9-3fbb01400f01/4%2Bklasse.glb?v=1649683630586" ar ar-modes="webxr scene-viewer quick-look" camera-controls environment-image="neutral" poster="poster.webp" shadow-intensity="1">
+    <button class="Hotspot" slot="hotspot-1" data-position="11.046000052640897m 1.7340874314152535m -1.0043280261227814m" data-normal="-1m 0m 0m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">tableau</div>
+    </button><button class="Hotspot" slot="hotspot-3" data-position="5.9052835563068m 0.7399999775269314m -1.2399410265756736m" data-normal="0m 0m 1m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">table
+        </div>
+    </button><button class="Hotspot" slot="hotspot-4" data-position="1.7701185091637832m 3.3306690738754696e-15m -2.3695701991793188m" data-normal="0m 1m 2.220446049250313e-16m" data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">sol</div>
+    </button>
+    <div class="progress-bar hide" slot="progress-bar">
+        <div class="update-bar"></div>
+    </div>
+    <button slot="ar-button" id="ar-button">
+        View in your space
+    </button>
+    <div id="ar-prompt">
+        <img src="https://modelviewer.dev/shared-assets/icons/hand.png">
+    </div>
+</model-viewer>
+
+    ></model-viewer>
+  </body>
+
+  ‍
+</html>
